@@ -561,7 +561,7 @@ const VOICE_GUIDE = `<b>🔈 聲音不好聽？下載 iPhone 的「增強版」�
   <span class="muted">不同 iOS 版本名稱可能是「增強」「優化」或「高品質」。檔案約 100–400MB，建議連 Wi-Fi 下載。</span>`;
 const REVOKE_STEPS = `<ol><li>到 GitHub → 右上角頭像 → <b>Settings</b> → 最下面 <b>Developer settings</b> → <b>Personal access tokens</b></li><li>找到「單字冊同步」那組，按 <b>Delete</b>（刪掉後這組金鑰立刻失效）</li><li>回到單字冊按「中斷」，再產生新的金鑰重新連接</li></ol>`;
 // 回饋：請大家到 Threads 貼文下留言。發文後把貼文網址填進來，設定頁和複習完成畫面就會出現連結
-const FEEDBACK_URL = '';
+const FEEDBACK_URL = 'https://www.threads.com/@maq127404/post/Df8a0LdgYhi';
 const feedbackHtml = (small) => `<div class="${small ? 'muted' : 'how'}" style="${small ? 'margin-top:14px;font-size:13px' : 'padding:12px 0'}">
   ${small ? '' : '<b>💬 有問題或建議？</b><br>'}歡迎到 Threads 貼文下面留言${FEEDBACK_URL ? `：<a class="link" href="${esc(FEEDBACK_URL)}" target="_blank" rel="noopener">打開貼文</a>` : ''}。哪裡壞了、哪裡不好用、你在看哪部劇，都可以說。</div>`;
 // 「收藏字幕」捷徑的 iCloud 分享連結：在 iPhone 做好捷徑、分享後填進來，設定頁就會出現一鍵安裝
