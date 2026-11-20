@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<!-- 內容安全政策：只允許本站的程式，網路連線只能到下面列出的服務（字典、翻譯、GitHub 同步） -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self' https://api.dictionaryapi.dev https://api.mymemory.translated.net https://api.github.com https://gist.githubusercontent.com; img-src 'self' data: blob: https://wordbook-tw.goatcounter.com; media-src 'self' https:; style-src 'self' 'unsafe-inline'; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="看劇遇到不懂的英文字，截圖或貼上就能查，一鍵存起來，照記憶曲線複習。免費、不用註冊、可離線。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="我的單字冊｜看劇學英文的單字本">
+<meta property="og:description" content="看劇遇到不懂的字，截圖或貼上就能查，一鍵存起來，照記憶曲線複習。免費、不用註冊、可離線。">
+<meta property="og:url" content="https://wordbook-tw.github.io/">
+<meta property="og:image" content="https://wordbook-tw.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+<title>我的單字冊</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="單字冊">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16171a" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <h1 id="title">查詢</h1>
+    <div id="topright"></div>
+  </header>
+
+  <main>
+    <div id="a2hs" hidden></div>
+    <!-- 查詢 -->
+    <section id="view-search" class="view active">
+      <div class="searchbox">
+        <input id="q" type="search" placeholder="查單字，或貼上整句字幕" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+        <button id="qshot" class="iconbtn shot" aria-label="從截圖讀字幕">📷</button>
+        <button id="qpaste" class="iconbtn paste" aria-label="貼上">📋</button>
+        <input type="file" id="shotfile" accept="image/*" hidden>
+        <button id="qclear" class="iconbtn" aria-label="清除">✕</button>
+      </div>
+      <ul id="suggest" class="suggest"></ul>
+      <div id="sentence"></div>
+      <div id="result"></div>
+      <div id="search-empty" class="empty">
+        <div id="dictload" hidden><div class="muted">正在下載離線字典（只有第一次）…</div><div class="progress"><i id="dictbar" style="width:0%"></i></div></div>
+        <p class="big">看劇遇到不懂的字？</p>
+        <p>直接查單字，或把整句字幕（英文＋中文）複製貼上，<br>點不懂的字就能查，台詞會自動記下來。</p>
+        <div id="recent"></div>
+      </div>
+    </section>
+
+    <!-- 單字冊 -->
+    <section id="view-book" class="view">
+      <div id="bookstats" class="stats"></div>
+      <div class="filters">
+        <input id="bookq" type="search" placeholder="在單字冊裡搜尋" autocomplete="off" autocapitalize="off">
+        <div class="chips" id="bookfilter">
+          <button data-f="all" class="chip on">全部</button>
+          <button data-f="inbox">待整理</button>
+          <button data-f="new">新字</button>
+          <button data-f="learning">學習中</button>
+          <button data-f="familiar">熟悉</button>
+          <button data-f="mastered">熟記</button>
+          <button data-f="hard">常忘</button>
+        </div>
+        <select id="booksort">
+          <option value="added">最近加入</option>
+          <option value="due">複習時間</option>
+          <option value="lapses">最常忘記</option>
+          <option value="alpha">A → Z</option>
+          <option value="source">依影集</option>
+        </select>
+      </div>
+      <ul id="booklist" class="wordlist"></ul>
+    </section>
+
+    <!-- 複習 -->
+    <section id="view-review" class="view">
+      <div id="review-home"></div>
+      <div id="review-card" hidden></div>
+    </section>
+
+    <!-- 邊走邊背 -->
+    <section id="view-walk" class="view">
+      <div id="walk"></div>
+    </section>
+
+    <!-- 設定 -->
+    <section id="view-settings" class="view">
+      <div id="settings"></div>
+    </section>
+  </main>
+
+  <nav id="tabs">
+    <button data-v="search" class="on"><svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>查詢</span></button>
+    <button data-v="book"><svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M8 7h7"/></svg><span>單字冊</span></button>
+    <button data-v="review"><svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg><span>複習</span><b id="duebadge" hidden></b></button>
+    <button data-v="walk"><svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="7" rx="1.5"/><rect x="17" y="14" width="4" height="7" rx="1.5"/></svg><span>走路背</span></button>
+    <button data-v="settings"><svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>設定</span></button>
+  </nav>
+</div>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-bg"></div>
+  <div class="sheet-body" id="sheet-body"></div>
+</div>
+<div id="toast" hidden></div>
+
+<script src="fsrs.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
